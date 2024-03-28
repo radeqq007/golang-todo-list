@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"html/template"
+	"log"
 	"net/http"
 )
 
@@ -35,7 +36,7 @@ func registerAuthHandler(w http.ResponseWriter, r *http.Request) {
 	q, err := db.Prepare("INSERT INTO users (username, password) VALUES (?, ?)")
 	// TODO: do something with that error instead of printing it
 	if err != nil {
-		fmt.Println("Error executing query.");
+		log.Fatal("Error preparing query:", err)
 	}
 	defer q.Close()
 	
@@ -46,17 +47,10 @@ func registerAuthHandler(w http.ResponseWriter, r *http.Request) {
 
 
 func userExists(username string) bool {
-	q, err := db.Query("SELECT username FROM users WHERE username = ?", username)
+	q := db.QueryRow("SELECT COUNT(*) FROM users WHERE username = ?", username)
 	
-	// TODO: do something with that error instead of printing it
-	if err != nil {
-		fmt.Println("Error querying database.");
-	}
-	defer q.Close()
+	var count int
+	q.Scan(&count)
 
-	if q.Next() {
-		return true
-	}
-
-	return true
+	return count > 0
 }

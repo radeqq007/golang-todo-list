@@ -8,11 +8,10 @@ import (
 )
 
 	var db *sql.DB
-	var err error
 
 	func dbConnect(){
 		username := "root"
-		password := "ILoveWaffles"
+		password := ""
 		address := "127.0.0.1:3306"
 		dbName := "todo-list"
 
@@ -22,5 +21,4 @@ import (
 		if err != nil {
 			fmt.Println("Error connecting to database.")
 		}
-		defer db.Close()
 	}
