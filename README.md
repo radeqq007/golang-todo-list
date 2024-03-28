@@ -1,3 +1,5 @@
-# A golang to-do list
+# TO-DO LIST
 
-## Supporting register and login system.
+A go to-do list with login system.
+<br/>
+<i>(Not finished)</i>
