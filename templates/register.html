@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Create new account</title>
+
+    <link rel="stylesheet" href="../static/styles/base.css" />
+    <link rel="stylesheet" href="../static/styles/register.css" />
+
+    <script src="../static/scripts/validateForm.js" defer></script>
+  </head>
+  <body>
+    <h1>Register</h1>
+    <form action="/registerauth" method="POST" onsubmit="return validate()">
+      <span>
+        <label for="username">Username: </label>
+        <input type="text" name="username" id="username" />
+      </span>
+      <span>
+        <label for="password">Password: </label>
+        <input type="password" name="password" id="password" />
+      </span>
+
+      <span id="error"> {{if .}} {{.}} {{end}} </span>
+
+      <input type="submit" value="Register" />
+    </form>
+  </body>
+</html>
