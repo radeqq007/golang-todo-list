@@ -2,14 +2,11 @@ package main
 
 import (
 	"net/http"
-	"text/template"
 )
 
-var tmpl *template.Template
+var err error
 
 func main() {
-	tmpl.ParseGlob("../../templates/*.html")
-
 	// Database connection
 	dbConnect()
 
