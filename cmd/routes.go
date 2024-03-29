@@ -5,6 +5,9 @@ import (
 )
 
 func routes() {
-	http.HandleFunc("/register", registerPageHandler)
+	http.HandleFunc("/list", listHandler)
+	http.HandleFunc("/login", loginHandler)
+	http.HandleFunc("/loginauth", loginAuthHandler)
+	http.HandleFunc("/register", registerHandler)
 	http.HandleFunc("/registerauth", registerAuthHandler)
 }

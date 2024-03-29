@@ -10,9 +10,11 @@ func main() {
 	// Database connection
 	dbConnect()
 
-
 	// Register routes
 	routes()
+	
+	// Parse templates
+	parseTemplates()
 
 	// Setup static file serving (doesn't work)
 	setupStaticFileServer()

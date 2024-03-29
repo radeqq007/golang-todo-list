@@ -10,17 +10,15 @@ import (
 
 var tmpl *template.Template
 
-func registerPageHandler(w http.ResponseWriter, r *http.Request) {
-
+func parseTemplates(){
 	tmpl, err = template.ParseGlob("../templates/*.html")
 	if err != nil {
-		log.Fatal("Error parsing templates.")
+		log.Fatal("Error parsing templates:", err)
 	}
+}
 
-	err := tmpl.ExecuteTemplate(w, "register.html", nil)
-	if err != nil {
-		log.Fatal("Error executing template:", err)
-	}
+func registerHandler(w http.ResponseWriter, r *http.Request) {
+	tmpl.ExecuteTemplate(w, "register.html", nil)
 }
 
 
@@ -31,15 +29,18 @@ func registerAuthHandler(w http.ResponseWriter, r *http.Request) {
 	password := r.FormValue("password")
 	
 	if userExists(username){
+		tmpl.ExecuteTemplate(w, "registerauth.html", "Account already exists.")
 		return;
 	}
 
 	hash, err := hashPassword(password)
+	// I should probably do something with this error but I don't know what
 	if err != nil {
 		log.Fatal("Error hashing password:", err)
 	}
 	
 	q, err := db.Prepare("INSERT INTO users (username, password) VALUES (?, ?)")
+	// Same with this error
 	if err != nil {
 		log.Fatal("Error preparing query:", err)
 	}
@@ -47,7 +48,7 @@ func registerAuthHandler(w http.ResponseWriter, r *http.Request) {
 	
 	q.Exec(username, hash)
 	
-	tmpl.ExecuteTemplate(w, "registerAuth.html", nil)
+	tmpl.ExecuteTemplate(w, "registerauth.html", nil)
 }
 
 
@@ -64,4 +65,38 @@ func hashPassword(password string) (string, error)	 {
 	byte, err := bcrypt.GenerateFromPassword([]byte(password), 14)
 
 	return string(byte), err
+}
+
+
+func loginHandler(w http.ResponseWriter, r *http.Request){
+	tmpl.ExecuteTemplate(w, "login.html", nil)
+}
+
+func loginAuthHandler(w http.ResponseWriter, r *http.Request){
+	r.ParseForm()
+	
+	username := r.FormValue("username")
+	password := r.FormValue("password")
+
+	var hash string;
+
+	q := db.QueryRow("SELECT password FROM users WHERE username = ?", username)
+	err = q.Scan(&hash)
+	if err != nil {
+		tmpl.ExecuteTemplate(w, "login.html", "Check username and password.")
+		return;
+	}
+
+	err = bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
+	if err == nil {
+		http.Redirect(w, r, "/list", http.StatusSeeOther)
+		return
+	}
+	tmpl.ExecuteTemplate(w, "login.html", "Check username and password.")
+}
+
+
+
+func listHandler(w http.ResponseWriter, r *http.Request){
+	tmpl.ExecuteTemplate(w, "list.html", nil)
 }
