@@ -1,10 +1,11 @@
 package main
 
 import (
-	"fmt"
 	"html/template"
 	"log"
 	"net/http"
+
+	"golang.org/x/crypto/bcrypt"
 )
 
 var tmpl *template.Template
@@ -13,12 +14,12 @@ func registerPageHandler(w http.ResponseWriter, r *http.Request) {
 
 	tmpl, err = template.ParseGlob("../templates/*.html")
 	if err != nil {
-		fmt.Println("Error parsing templates.")
+		log.Fatal("Error parsing templates.")
 	}
 
 	err := tmpl.ExecuteTemplate(w, "register.html", nil)
 	if err != nil {
-		fmt.Println("Error executing template:", err)
+		log.Fatal("Error executing template:", err)
 	}
 }
 
@@ -32,15 +33,19 @@ func registerAuthHandler(w http.ResponseWriter, r *http.Request) {
 	if userExists(username){
 		return;
 	}
+
+	hash, err := hashPassword(password)
+	if err != nil {
+		log.Fatal("Error hashing password:", err)
+	}
 	
 	q, err := db.Prepare("INSERT INTO users (username, password) VALUES (?, ?)")
-	// TODO: do something with that error instead of printing it
 	if err != nil {
 		log.Fatal("Error preparing query:", err)
 	}
 	defer q.Close()
 	
-	q.Exec(username, password)
+	q.Exec(username, hash)
 	
 	tmpl.ExecuteTemplate(w, "registerAuth.html", nil)
 }
@@ -53,4 +58,10 @@ func userExists(username string) bool {
 	q.Scan(&count)
 
 	return count > 0
+}
+
+func hashPassword(password string) (string, error)	 {
+	byte, err := bcrypt.GenerateFromPassword([]byte(password), 14)
+
+	return string(byte), err
 }
