@@ -5,10 +5,12 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/gorilla/sessions"
 	"golang.org/x/crypto/bcrypt"
 )
 
 var tmpl *template.Template
+var store = sessions.NewCookieStore([]byte("something-very-secret"))
 
 func parseTemplates(){
 	tmpl, err = template.ParseGlob("../templates/*.html")
@@ -78,10 +80,11 @@ func loginAuthHandler(w http.ResponseWriter, r *http.Request){
 	username := r.FormValue("username")
 	password := r.FormValue("password")
 
+	var userID int;
 	var hash string;
 
-	q := db.QueryRow("SELECT password FROM users WHERE username = ?", username)
-	err = q.Scan(&hash)
+	q := db.QueryRow("SELECT id, password FROM users WHERE username = ?", username)
+	err = q.Scan(&userID, &hash)
 	if err != nil {
 		tmpl.ExecuteTemplate(w, "login.html", "Check username and password.")
 		return;
@@ -89,6 +92,14 @@ func loginAuthHandler(w http.ResponseWriter, r *http.Request){
 
 	err = bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
 	if err == nil {
+		session, _ := store.Get(r, "session")
+		session.Values["userID"] = userID
+		err := session.Save(r, w)
+		if err != nil {
+			log.Fatal("Error saving session:", err)
+			return
+		}
+
 		http.Redirect(w, r, "/list", http.StatusSeeOther)
 		return
 	}
