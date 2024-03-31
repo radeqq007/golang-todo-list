@@ -31,7 +31,7 @@ func registerAuthHandler(w http.ResponseWriter, r *http.Request) {
 	password := r.FormValue("password")
 	
 	if userExists(username){
-		tmpl.ExecuteTemplate(w, "registerauth.html", "Account already exists.")
+		tmpl.ExecuteTemplate(w, "register.html", "User already exists.")
 		return;
 	}
 
@@ -109,5 +109,13 @@ func loginAuthHandler(w http.ResponseWriter, r *http.Request){
 
 
 func listHandler(w http.ResponseWriter, r *http.Request){
+
+	session, _ := store.Get(r, "session")
+	_, ok := session.Values["userID"]
+	if !ok {
+		http.Redirect(w, r, "/login", http.StatusSeeOther)
+		return
+	}
+	
 	tmpl.ExecuteTemplate(w, "list.html", nil)
 }
