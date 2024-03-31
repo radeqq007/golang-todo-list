@@ -1,5 +1,12 @@
-# TO-DO LIST
+# GOLANG TO-DO LIST
 
-A go to-do list with login system.
-<br/>
-<i>(Not finished)</i>
+A simple todo list application with user authentication.
+
+## instalation
+
+1. Clone the repository.
+2. Install dependencies using `go mod tidy`.
+3. Set up the database according to `database/database.sql`.
+
+## Configuration
+This app uses mariaDB version 8.0.30 database.
