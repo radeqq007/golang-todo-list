@@ -1,3 +1,37 @@
+body {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+.item {
+  min-width: 250px;
+  display: flex;
+}
+
+/*There probably is a better way to do this but I don't know how*/
+.content {
+  margin-right: auto;
+}
+
+.buttons {
+  margin-left: auto;
+}
+
 a {
   text-decoration: none;
+}
+
+li {
+  list-style-type: none;
+}
+
+.checked .content {
+  text-decoration: line-through;
+  color: #706a6a;
 }

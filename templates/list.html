@@ -11,10 +11,10 @@
   <body>
     <ul>
       {{range .}}
-      <div class="item">
-        <li>
-          {{.Content}}
-          <!-- TODO: add those handlers-->
+      <li class="item{{if .Checked}} checked{{end}}">
+        <span class="content"> {{.Content}} </span>
+
+        <span class="buttons">
           {{if .Checked}}
           <a href="/uncheckHandler/?id={{.ID}}">✅</a>
           {{else}}
@@ -23,8 +23,8 @@
 
           <a href="/edit/?id={{.ID}}">✏️</a>
           <a href="/deleteHandler/?id={{.ID}}">🗑️</a>
-        </li>
-      </div>
+        </span>
+      </li>
       {{end}}
     </ul>
     <form action="/addHandler" method="GET">

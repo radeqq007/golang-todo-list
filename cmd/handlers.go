@@ -89,6 +89,8 @@ func registerAuthHandler(w http.ResponseWriter, r *http.Request) {
 
 
 func loginHandler(w http.ResponseWriter, r *http.Request){
+	// TODO: redirect if already logged in
+
 	tmpl.ExecuteTemplate(w, "login.html", nil)
 }
 
