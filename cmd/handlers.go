@@ -126,6 +126,17 @@ func loginAuthHandler(w http.ResponseWriter, r *http.Request){
 	tmpl.ExecuteTemplate(w, "login.html", "Check username and password.")
 }
 
+func logoutHandler(w http.ResponseWriter, r *http.Request) {
+	session, _ := store.Get(r, "session")
+	session.Values["userID"] = nil
+	session.Options.MaxAge = -1 
+	err := session.Save(r, w)
+	if err != nil {
+			log.Fatal("Error saving session:", err)
+			return
+	}
+	http.Redirect(w, r, "/login", http.StatusSeeOther)
+}
 
 
 func listHandler(w http.ResponseWriter, r *http.Request){
