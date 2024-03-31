@@ -9,6 +9,10 @@
     <link rel="stylesheet" href="/styles/list.css" />
   </head>
   <body>
+    <div id="logout">
+      <a href="/logout">Log out</a>
+    </div>
+
     <ul>
       {{range .}}
       <li class="item{{if .Checked}} checked{{end}}">
