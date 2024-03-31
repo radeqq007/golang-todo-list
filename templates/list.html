@@ -13,16 +13,16 @@
       {{range .}}
       <div class="item">
         <li>
-          {{.content}}
+          {{.Content}}
           <!-- TODO: add those handlers-->
           {{if .Checked}}
-          <a href="/uncheckHandler/?id={{.id}}">✅</a>
+          <a href="/uncheckHandler/?id={{.ID}}">✅</a>
           {{else}}
-          <a href="/checkHandler/?id={{.id}}">❌</a>
+          <a href="/checkHandler/?id={{.ID}}">❌</a>
           {{end}}
 
-          <a href="/edit/?id={{.id}}">✏️</a>
-          <a href="/removeHandler/?id={{.id}}">🗑️</a>
+          <a href="/edit/?id={{.ID}}">✏️</a>
+          <a href="/deleteHandler/?id={{.ID}}">🗑️</a>
         </li>
       </div>
       {{end}}
