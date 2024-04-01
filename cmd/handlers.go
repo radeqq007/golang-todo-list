@@ -70,13 +70,11 @@ func registerAuthHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	hash, err := hashPassword(password)
-	// I should probably do something with this error but I don't know what
 	if err != nil {
 		log.Fatal("Error hashing password:", err)
 	}
 	
 	q, err := db.Prepare("INSERT INTO users (username, password) VALUES (?, ?)")
-	// Same with this error
 	if err != nil {
 		log.Fatal("Error preparing query:", err)
 	}
@@ -89,7 +87,12 @@ func registerAuthHandler(w http.ResponseWriter, r *http.Request) {
 
 
 func loginHandler(w http.ResponseWriter, r *http.Request){
-	// TODO: redirect if already logged in
+	session, _ := store.Get(r, "session")
+	_, ok := session.Values["userID"]
+	if ok {
+		http.Redirect(w, r, "/list", http.StatusSeeOther)
+		return
+	}
 
 	tmpl.ExecuteTemplate(w, "login.html", nil)
 }

@@ -18,7 +18,7 @@ func main() {
 	// Parse templates
 	parseTemplates()
 
-	// Setup static file serving (doesn't work)
+	// Setup static file serving
 	setupStaticFileServer()
 
 
