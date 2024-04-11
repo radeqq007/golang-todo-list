@@ -11,4 +11,4 @@ A simple todo list application with user authentication.
 
 ## Configuration
 
-This app uses mariaDB version 8.0.30 database.
+This app uses mariaDB v8.0.30.
