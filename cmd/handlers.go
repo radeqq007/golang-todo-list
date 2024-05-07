@@ -135,8 +135,8 @@ func logoutHandler(w http.ResponseWriter, r *http.Request) {
 	session.Options.MaxAge = -1 
 	err := session.Save(r, w)
 	if err != nil {
-			log.Fatal("Error saving session:", err)
-			return
+		log.Fatal("Error saving session:", err)
+		return
 	}
 	http.Redirect(w, r, "/login", http.StatusSeeOther)
 }
