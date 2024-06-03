@@ -52,6 +52,10 @@ func isLoggedIn(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func pageNotFoundHandler(w http.ResponseWriter, r *http.Request) {
+	tmpl.ExecuteTemplate(w, "404.html", nil)
+}
+
 
 func registerHandler(w http.ResponseWriter, r *http.Request) {
 	tmpl.ExecuteTemplate(w, "register.html", nil)

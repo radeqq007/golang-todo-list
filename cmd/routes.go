@@ -5,6 +5,8 @@ import (
 )
 
 func routes() {
+	http.HandleFunc("/", pageNotFoundHandler)
+
 	http.HandleFunc("/list", listHandler)
 	http.HandleFunc("/login", loginHandler)
 	http.HandleFunc("/loginauth", loginAuthHandler)
