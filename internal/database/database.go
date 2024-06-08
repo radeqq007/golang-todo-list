@@ -1,4 +1,4 @@
-package main
+package database
 
 import (
 	"database/sql"
@@ -8,9 +8,10 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 )
 
-	var db *sql.DB
+	var Db *sql.DB
+	var err error
 
-	func dbConnect(){
+	func DbConnect(){
 		username := "root"
 		password := ""
 		address := "127.0.0.1:3306"
@@ -18,7 +19,7 @@ import (
 
 		dns := fmt.Sprintf("%s:%s@tcp(%s)/%s", username, password, address, dbName)
 
-		db, err = sql.Open("mysql", dns)
+		Db, err = sql.Open("mysql", dns)
 		if err != nil {
 			log.Fatal("Error connecting to database.")
 		}

@@ -1,4 +1,4 @@
-package main
+package handlers
 
 import (
 	"html/template"
@@ -6,12 +6,15 @@ import (
 	"net/http"
 	"strconv"
 
+	"todo-list/internal/database"
+
 	"github.com/gorilla/sessions"
 	"golang.org/x/crypto/bcrypt"
 )
 
 var tmpl *template.Template
 var store = sessions.NewCookieStore([]byte("something-very-secret"))
+var err error
 
 type ListItem struct {
 	ID     		int
@@ -20,8 +23,10 @@ type ListItem struct {
 }
 
 
-func parseTemplates(){
-	tmpl, err = template.ParseGlob("../templates/*.html")
+
+
+func ParseTemplates(){
+	tmpl, err = template.ParseGlob("./templates/*.html")
 	if err != nil {
 		log.Fatal("Error parsing templates:", err)
 	}
@@ -29,7 +34,7 @@ func parseTemplates(){
 
 
 func userExists(username string) bool {
-	q := db.QueryRow("SELECT COUNT(*) FROM users WHERE username = ?", username)
+	q := database.Db.QueryRow("SELECT COUNT(*) FROM users WHERE username = ?", username)
 	
 	var count int
 	q.Scan(&count)
@@ -52,17 +57,17 @@ func isLoggedIn(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func pageNotFoundHandler(w http.ResponseWriter, r *http.Request) {
+func PageNotFoundHandler(w http.ResponseWriter, r *http.Request) {
 	tmpl.ExecuteTemplate(w, "404.html", nil)
 }
 
 
-func registerHandler(w http.ResponseWriter, r *http.Request) {
+func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 	tmpl.ExecuteTemplate(w, "register.html", nil)
 }
 
 
-func registerAuthHandler(w http.ResponseWriter, r *http.Request) {
+func RegisterAuthHandler(w http.ResponseWriter, r *http.Request) {
 	r.ParseForm()
 	
 	username := r.FormValue("username")
@@ -78,7 +83,7 @@ func registerAuthHandler(w http.ResponseWriter, r *http.Request) {
 		log.Fatal("Error hashing password:", err)
 	}
 	
-	q, err := db.Prepare("INSERT INTO users (username, password) VALUES (?, ?)")
+	q, err := database.Db.Prepare("INSERT INTO users (username, password) VALUES (?, ?)")
 	if err != nil {
 		log.Fatal("Error preparing query:", err)
 	}
@@ -90,7 +95,7 @@ func registerAuthHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 
-func loginHandler(w http.ResponseWriter, r *http.Request){
+func LoginHandler(w http.ResponseWriter, r *http.Request){
 	session, _ := store.Get(r, "session")
 	_, ok := session.Values["userID"]
 	if ok {
@@ -101,7 +106,7 @@ func loginHandler(w http.ResponseWriter, r *http.Request){
 	tmpl.ExecuteTemplate(w, "login.html", nil)
 }
 
-func loginAuthHandler(w http.ResponseWriter, r *http.Request){
+func LoginAuthHandler(w http.ResponseWriter, r *http.Request){
 	r.ParseForm()
 	
 	username := r.FormValue("username")
@@ -110,7 +115,7 @@ func loginAuthHandler(w http.ResponseWriter, r *http.Request){
 	var userID int;
 	var hash string;
 
-	q := db.QueryRow("SELECT id, password FROM users WHERE username = ?", username)
+	q := database.Db.QueryRow("SELECT id, password FROM users WHERE username = ?", username)
 	err = q.Scan(&userID, &hash)
 	if err != nil {
 		tmpl.ExecuteTemplate(w, "login.html", "Check username and password.")
@@ -133,7 +138,7 @@ func loginAuthHandler(w http.ResponseWriter, r *http.Request){
 	tmpl.ExecuteTemplate(w, "login.html", "Check username and password.")
 }
 
-func logoutHandler(w http.ResponseWriter, r *http.Request) {
+func LogoutHandler(w http.ResponseWriter, r *http.Request) {
 	session, _ := store.Get(r, "session")
 	session.Values["userID"] = nil
 	session.Options.MaxAge = -1 
@@ -146,14 +151,14 @@ func logoutHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 
-func listHandler(w http.ResponseWriter, r *http.Request){
+func ListHandler(w http.ResponseWriter, r *http.Request){
 	session, _ := store.Get(r, "session")
 
 	isLoggedIn(w, r)
 
 	userID := session.Values["userID"]
 
-	rows, err := db.Query("SELECT id, content, checked FROM todos WHERE user_id = ?", userID)
+	rows, err := database.Db.Query("SELECT id, content, checked FROM todos WHERE user_id = ?", userID)
 	if err != nil {
 		log.Fatal("Error querying database:", err)
 	}
@@ -171,7 +176,7 @@ func listHandler(w http.ResponseWriter, r *http.Request){
 	tmpl.ExecuteTemplate(w, "list.html", items)
 }
 
-func addHandler(w http.ResponseWriter, r *http.Request) {
+func AddHandler(w http.ResponseWriter, r *http.Request) {
 
 	session, _ := store.Get(r, "session")
 
@@ -187,7 +192,7 @@ func addHandler(w http.ResponseWriter, r *http.Request) {
 	userID := session.Values["userID"]
 
 
-	q, err := db.Prepare("INSERT INTO todos (content, checked ,user_id) VALUES (?, ?, ?)")
+	q, err := database.Db.Prepare("INSERT INTO todos (content, checked ,user_id) VALUES (?, ?, ?)")
 	if err != nil {
 		log.Fatal("Error preparing query:", err)
 	}
@@ -198,7 +203,7 @@ func addHandler(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/list", http.StatusSeeOther)
 }
 
-func uncheckHandler(w http.ResponseWriter, r *http.Request){
+func UncheckHandler(w http.ResponseWriter, r *http.Request){
 
 	session, _ := store.Get(r, "session")
 	isLoggedIn(w, r)
@@ -210,7 +215,7 @@ func uncheckHandler(w http.ResponseWriter, r *http.Request){
 
 	userID := session.Values["userID"]
 	id := r.FormValue("id")
-	q, err := db.Prepare("UPDATE todos SET checked = 0 WHERE id = ? AND user_id = ?")
+	q, err := database.Db.Prepare("UPDATE todos SET checked = 0 WHERE id = ? AND user_id = ?")
 	if err != nil {
 		log.Fatal("Error preparing query:", err)
 	}
@@ -220,7 +225,7 @@ func uncheckHandler(w http.ResponseWriter, r *http.Request){
 
 }
 
-func checkHandler(w http.ResponseWriter, r *http.Request){
+func CheckHandler(w http.ResponseWriter, r *http.Request){
 
 	session, _ := store.Get(r, "session")
 	isLoggedIn(w, r)
@@ -232,7 +237,7 @@ func checkHandler(w http.ResponseWriter, r *http.Request){
 
 	userID := session.Values["userID"]
 	id := r.FormValue("id")
-	q, err := db.Prepare("UPDATE todos SET checked = 1 WHERE id = ? AND user_id = ?")
+	q, err := database.Db.Prepare("UPDATE todos SET checked = 1 WHERE id = ? AND user_id = ?")
 	if err != nil {
 		log.Fatal("Error preparing query:", err)
 	}
@@ -241,7 +246,7 @@ func checkHandler(w http.ResponseWriter, r *http.Request){
 	http.Redirect(w, r, "/list", http.StatusSeeOther)
 }
 
-func deleteHandler(w http.ResponseWriter, r *http.Request){
+func DeleteHandler(w http.ResponseWriter, r *http.Request){
 	session, _ := store.Get(r, "session")
 	isLoggedIn(w, r)
 
@@ -252,7 +257,7 @@ func deleteHandler(w http.ResponseWriter, r *http.Request){
 
 	userID := session.Values["userID"]
 	id := r.FormValue("id")
-	q, err := db.Prepare("DELETE FROM todos WHERE id = ? AND user_id = ?")
+	q, err := database.Db.Prepare("DELETE FROM todos WHERE id = ? AND user_id = ?")
 	if err != nil {
 		log.Fatal("Error preparing query:", err)
 	}
@@ -261,7 +266,7 @@ func deleteHandler(w http.ResponseWriter, r *http.Request){
 	http.Redirect(w, r, "/list", http.StatusSeeOther)
 }
 
-func editItemHandler(w http.ResponseWriter, r *http.Request){
+func EditItemHandler(w http.ResponseWriter, r *http.Request){
 
 	session, _ := store.Get(r, "session")
 	isLoggedIn(w, r)
@@ -276,7 +281,7 @@ func editItemHandler(w http.ResponseWriter, r *http.Request){
 	idStr := r.FormValue("id")
 	id, _ := strconv.Atoi(idStr)
 	item.ID = id
-	q := db.QueryRow("SELECT content FROM todos WHERE id = ? AND user_id = ?", id, userID)
+	q := database.Db.QueryRow("SELECT content FROM todos WHERE id = ? AND user_id = ?", id, userID)
 	
 	q.Scan(&item.Content)
 
@@ -284,12 +289,12 @@ func editItemHandler(w http.ResponseWriter, r *http.Request){
 	tmpl.ExecuteTemplate(w, "edit.html", item)
 }
 
-func editHandler(w http.ResponseWriter, r *http.Request) {
+func EditHandler(w http.ResponseWriter, r *http.Request) {
 	r.ParseForm()
 
 	id := r.FormValue("id")
 	content := r.FormValue("content")
-	q, err := db.Prepare("UPDATE todos SET content = ? WHERE id = ?")
+	q, err := database.Db.Prepare("UPDATE todos SET content = ? WHERE id = ?")
 	if err != nil {
 		log.Fatal("Error preparing query:", err)
 	}
