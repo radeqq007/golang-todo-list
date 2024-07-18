@@ -5,9 +5,12 @@ A simple todo list application with user authentication.
 ## instalation
 
 1. Clone the repository.
-2. Install dependencies using `go mod tidy`.
-3. Set up the database according to `internal/database/schema.sql`.
-4. Run the application:
+2. Install dependencies:
+   ```
+   go mod tidy
+   ```
+4. Set up the database according to `internal/database/schema.sql`.
+5. Run the application:
    - On Windows, run `run.bat`
    - On other platforms (e.g., Linux, macOS), run `run.sh`
 
