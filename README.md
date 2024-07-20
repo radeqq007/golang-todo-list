@@ -4,7 +4,11 @@ A simple todo list application with user authentication.
 
 ## instalation
 
-1. Clone the repository.
+1. Clone the repository:
+   ```
+   git clone https://github.com/radeqq007/golang-todo-list/
+   cd golang-todo-list
+   ```
 2. Install dependencies:
    ```
    go mod tidy
