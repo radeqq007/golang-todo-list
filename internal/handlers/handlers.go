@@ -12,9 +12,11 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-var tmpl *template.Template
-var store = sessions.NewCookieStore([]byte("something-very-secret"))
-var err error
+var (
+	tmpl *template.Template
+	store = sessions.NewCookieStore([]byte("something-very-secret"))
+	err error
+)
 
 type ListItem struct {
 	ID     		int

@@ -8,9 +8,11 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 )
 
-	var Db *sql.DB
-	var err error
-
+	var (
+		Db *sql.DB
+		err error
+	)
+	
 	func DbConnect(){
 		username := "root"
 		password := ""
