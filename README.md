@@ -13,10 +13,11 @@ A simple todo list application with user authentication.
    ```
    go mod tidy
    ```
-4. Set up the database according to `internal/database/schema.sql`.
-5. Run the application:
-   - On Windows, run `run.bat`
-   - On other platforms (e.g., Linux, macOS), run `run.sh`
+3. Set up the database according to `internal/database/schema.sql`.
+4. Run the main.go file:
+   ```
+   go run ./cmd/app/main.go
+   ```
 
 ## Configuration
 
