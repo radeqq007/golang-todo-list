@@ -30,10 +30,11 @@ func main() {
 
 
 	// Host the http server
-	err = http.ListenAndServe(":8080", context.ClearHandler(http.DefaultServeMux))
+	port := ":8080"
+	fmt.Printf("🚀 Running todo list on localhost%s...\n", port)
+	err = http.ListenAndServe(port, context.ClearHandler(http.DefaultServeMux))
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	fmt.Println("🚀 Running go todo list...")
 }
