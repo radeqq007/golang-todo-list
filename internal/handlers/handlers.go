@@ -93,7 +93,7 @@ func RegisterAuthHandler(w http.ResponseWriter, r *http.Request) {
 	
 	q.Exec(username, hash)
 	
-	tmpl.ExecuteTemplate(w, "registerauth.html", nil)
+	tmpl.ExecuteTemplate(w, "registerAuth.html", nil)
 }
 
 
