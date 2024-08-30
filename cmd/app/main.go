@@ -16,20 +16,15 @@ import (
 var err error
 
 func main() {
-	// Database connection
 	database.DbConnect()
 
-	// Register routes
 	routes.Routes()
 	
-	// Parse templates
 	handlers.ParseTemplates()
 
-	// Setup static file serving
 	static.SetupStaticFileServer()
 
 
-	// Host the http server
 	port := ":8080"
 	fmt.Printf("🚀 Running todo list on localhost%s...\n", port)
 	err = http.ListenAndServe(port, context.ClearHandler(http.DefaultServeMux))
